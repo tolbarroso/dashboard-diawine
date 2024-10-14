@@ -1,21 +1,10 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #111111;
-    color: white;
+    color: #FFFFFF;
 }
 
 h1, h2, h3 {
-    color: #FF6347;
-}
-
-button {
-    background-color: #FF6347;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #FF4500;
+    color: #F6C62D;
+    text-align: center;
 }
