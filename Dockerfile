@@ -1,18 +1,17 @@
-# Use uma imagem base
-FROM python:3.9-slim
+# Imagem base
+FROM python:3.9
 
-# Crie uma pasta para o app
+# Diretório de trabalho
 WORKDIR /app
 
-# Copie os arquivos necessários
+# Copiar arquivos
 COPY . /app
 
-# Instale as dependências
-RUN pip install --upgrade pip
+# Instalar dependências
 RUN pip install -r requirements.txt
 
-# Exponha a porta para o Dash
+# Expor a porta e iniciar a aplicação
 EXPOSE 8050
 
-# Defina o comando para iniciar a aplicação usando o Gunicorn
+# Usar Gunicorn para a execução do servidor em produção
 CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:server"]

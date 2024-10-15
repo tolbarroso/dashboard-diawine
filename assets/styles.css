@@ -4,7 +4,31 @@ body {
     color: #FFFFFF;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #F6C62D;
     text-align: center;
+}
+
+.navbar {
+    background-color: #151D52;
+}
+
+.container {
+    padding: 20px;
+    margin-bottom: 30px;
+    background-color: #222222;
+    border-radius: 8px;
+}
+
+button {
+    color: #FFFFFF;
+    background-color: #F6C62D;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #D5B226;
 }
