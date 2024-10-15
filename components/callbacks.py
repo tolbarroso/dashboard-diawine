@@ -2,13 +2,20 @@ from dash import Input, Output
 import pandas as pd
 import plotly.express as px
 
-# Carregar dados
-data = pd.read_excel('data/dados_diawine23_24.xls', sheet_name='dados_diawine23_24')
+# Carregar dados de 2023 e 2024 separadamente
+dados_diawine_2023 = pd.read_excel('data/dados_diawine_2023.xls', sheet_name='dados_diawine_2023')
+dados_diawine_2024 = pd.read_excel('data/dados_diawine_2024.xls', sheet_name='dados_diawine_2024')
+
+# Combinar os dados para visualização
+data = pd.concat([dados_diawine_2023, dados_diawine_2024], ignore_index=True)
 
 # Função para registrar callbacks
 def register_callbacks(app):
     @app.callback(
-        [Output('grafico-principal', 'figure'),
+        [Output('grafico1', 'figure'),
+         Output('grafico2', 'figure'),
+         Output('grafico3', 'figure'),
+         Output('grafico4', 'figure'),
          Output('tabela-principal', 'data')],
         [Input('filtro-rca', 'value'),
          Input('filtro-cliente', 'value'),
@@ -42,10 +49,15 @@ def register_callbacks(app):
             (dados_filtrados['DT FAT'] <= pd.to_datetime(data_fim))
         ]
 
+        # Criar gráficos
+        fig1 = px.bar(dados_filtrados, x='NOME FANTASIA', y='TOTAL', color='RCA', title='Faturamento por Cliente')
+        fig2 = px.line(dados_filtrados, x='DT FAT', y='TOTAL', color='RCA', title='Faturamento ao longo do Tempo')
+        fig3 = px.pie(dados_filtrados, names='NOME FANTASIA', values='TOTAL', title='Participação por Cliente')
+        fig4 = px.scatter(dados_filtrados, x='QT', y='TOTAL', color='RCA', title='Quantidade vs. Faturamento')
+
         # Seleção de visualização
         if tipo_visualizacao == 'grafico':
-            figura = px.bar(dados_filtrados, x='NOME FANTASIA', y='TOTAL', color='RCA', title='Faturamento por Cliente')
-            return figura, []
+            return fig1, fig2, fig3, fig4, []
         else:
             dados_tabela = dados_filtrados.to_dict('records')
-            return {}, dados_tabela
+            return {}, {}, {}, {}, dados_tabela

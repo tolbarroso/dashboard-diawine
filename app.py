@@ -17,4 +17,4 @@ register_callbacks(app)
 
 # Rodar a aplicação
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True)  # Mude debug=True para False em produção
