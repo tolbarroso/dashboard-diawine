@@ -3,11 +3,11 @@ import pandas as pd
 import plotly.express as px
 
 # Carregar dados de 2023 e 2024 separadamente
-dados_diawine_2023 = pd.read_excel('data/dados_diawine_2023.xls', sheet_name='dados_diawine_2023')
-dados_diawine_2024 = pd.read_excel('data/dados_diawine_2024.xls', sheet_name='dados_diawine_2024')
+dados_2023 = pd.read_excel('data/dados_2023.csv', sheet_name='dados_2023')
+dados_2024 = pd.read_excel('data/dados_2024.csv', sheet_name='dados_2024')
 
 # Combinar os dados para visualização
-data = pd.concat([dados_diawine_2023, dados_diawine_2024], ignore_index=True)
+data = pd.concat([dados_2023, dados_2024], ignore_index=True)
 
 # Função para registrar callbacks
 def register_callbacks(app):

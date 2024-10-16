@@ -2,12 +2,12 @@ from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 import pandas as pd
 
-# Carregar dados de 2023 e 2024 separadamente
-dados_diawine_2023 = pd.read_excel('data/dados_diawine_2023.xls', sheet_name='dados_diawine_2023')
-dados_diawine_2024 = pd.read_excel('data/dados_diawine_2024.xls', sheet_name='dados_diawine_2024')
+# Carregar dados de 2023 e 2024 separadamentes
+dados_2023 = pd.read_excel('data/dados_2023.csv', sheet_name='dados_2023')
+dados_2024 = pd.read_excel('data/dados_2024.csv', sheet_name='dados_2024')
 
 # Combinar as duas tabelas para uma visão geral consolidada
-data = pd.concat([dados_diawine_2023, dados_diawine_2024])
+data = pd.concat([dados_2023, dados_2024])
 
 # Layout principal do dashboard
 layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, children=[
@@ -29,21 +29,21 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
         dbc.Row([
             dbc.Col([
                 html.H4("Faturamento Total"),
-                html.P(f"2023: R${dados_diawine_2023['TOTAL'].sum():,.2f}"),
-                html.P(f"2024: R${dados_diawine_2024['TOTAL'].sum():,.2f}"),
-                html.P(f"Crescimento: {(dados_diawine_2024['TOTAL'].sum() - dados_diawine_2023['TOTAL'].sum()) / dados_diawine_2023['TOTAL'].sum() * 100:.2f}%")
+                html.P(f"2023: R${dados_2023['TOTAL'].sum():,.2f}"),
+                html.P(f"2024: R${dados_2024['TOTAL'].sum():,.2f}"),
+                html.P(f"Crescimento: {(dados_2024['TOTAL'].sum() - dados_2023['TOTAL'].sum()) / dados_2023['TOTAL'].sum() * 100:.2f}%")
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'}),
             dbc.Col([
                 html.H4("Quantidade de Garrafas"),
-                html.P(f"2023: {dados_diawine_2023['QT'].sum():.0f}"),
-                html.P(f"2024: {dados_diawine_2024['QT'].sum():.0f}"),
-                html.P(f"Crescimento: {(dados_diawine_2024['QT'].sum() - dados_diawine_2023['QT'].sum()) / dados_diawine_2023['QT'].sum() * 100:.2f}%")
+                html.P(f"2023: {dados_2023['QT'].sum():.0f}"),
+                html.P(f"2024: {dados_2024['QT'].sum():.0f}"),
+                html.P(f"Crescimento: {(dados_2024['QT'].sum() - dados_2023['QT'].sum()) / dados_2023['QT'].sum() * 100:.2f}%")
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'}),
             dbc.Col([
                 html.H4("Quantidade de Clientes"),
-                html.P(f"2023: {dados_diawine_2023['COD CLIENTE'].nunique():.0f}"),
-                html.P(f"2024: {dados_diawine_2024['COD CLIENTE'].nunique():.0f}"),
-                html.P(f"Crescimento: {(dados_diawine_2024['COD CLIENTE'].sum() - dados_diawine_2023['COD CLIENTE'].sum()) / dados_diawine_2023['COD CLIENTE'].sum() * 100:.2f}%")
+                html.P(f"2023: {dados_2023['COD CLIENTE'].nunique():.0f}"),
+                html.P(f"2024: {dados_2024['COD CLIENTE'].nunique():.0f}"),
+                html.P(f"Crescimento: {(dados_2024['COD CLIENTE'].sum() - dados_2023['COD CLIENTE'].sum()) / dados_2023['COD CLIENTE'].sum() * 100:.2f}%")
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'})
         ])
     ], style={'margin-bottom': '30px'}),
