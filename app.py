@@ -15,6 +15,10 @@ app.layout = layout
 # Registrar todos os callbacks
 register_callbacks(app)
 
+# Verificar os nomes das abas no arquivo de 2023 e 2024
+print(pd.ExcelFile('data/dados_2023.xlsx').sheet_names)
+print(pd.ExcelFile('data/dados_2024.xlsx').sheet_names)
+
 # Rodar a aplicação
 if __name__ == '__main__':
     app.run_server(debug=True)  # Mude debug=True para False em produção
