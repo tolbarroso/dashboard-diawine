@@ -1,17 +1,20 @@
-from dash import Dash, html
-import dash_bootstrap_components as dbc
+import dash
+from dash import dcc, html
 from components.layout import layout  # Layout principal importado do arquivo layout.py
 from components.callbacks import register_callbacks  # Função para registrar callbacks
+import dash_bootstrap_components as dbc
 
-# Inicializar o aplicativo Dash
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Criar aplicação Dash com tema do Bootstrap
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+app.title = "DashBoard Dia Wine"
+server = app.server  # Adicionando isto para que o Gunicorn reconheça a aplicação
 
-# Configurar o layout
+# Configuração do layout da aplicação
 app.layout = layout
 
-# Registrar os callbacks
+# Registrar todos os callbacks
 register_callbacks(app)
 
-# Rodar o servidor
-if __name__ == "__main__":
-    app.run_server(debug=True)
+# Rodar a aplicação
+if __name__ == '__main__':
+    app.run_server(debug=True)  # Mude debug=True para False em produção
