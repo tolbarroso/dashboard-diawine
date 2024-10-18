@@ -2,19 +2,21 @@ from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 import pandas as pd
 
-# Carregar dados de 2023 e 2024 separadamente
-dados_2023 = pd.read_excel('data/dados_2023.xlsx')
-dados_2024 = pd.read_excel('data/dados_2024.xlsx')
+# Carregar dados de 2023 e 2024 em CSV com separador correto
+dados_2023 = pd.read_csv('data/dados_2023.csv', encoding='latin1', sep=';', on_bad_lines='skip')
+dados_2024 = pd.read_csv('data/dados_2024.csv', encoding='latin1', sep=';', on_bad_lines='skip')
 
-# Tentar converter a coluna TOTAL para numérico, forçando erros para NaN
+# Converter as colunas TOTAL e QT para numérico, forçando erros para NaN
 dados_2023['TOTAL'] = pd.to_numeric(dados_2023['TOTAL'], errors='coerce')
+dados_2023['QT'] = pd.to_numeric(dados_2023['QT'], errors='coerce')
 dados_2024['TOTAL'] = pd.to_numeric(dados_2024['TOTAL'], errors='coerce')
+dados_2024['QT'] = pd.to_numeric(dados_2024['QT'], errors='coerce')
 
-# Remover NaNs se necessário (opcional)
-dados_2023 = dados_2023.dropna(subset=['TOTAL'])
-dados_2024 = dados_2024.dropna(subset=['TOTAL'])
+# Remover NaNs se necessário
+dados_2023 = dados_2023.dropna(subset=['TOTAL', 'QT'])
+dados_2024 = dados_2024.dropna(subset=['TOTAL', 'QT'])
 
-# Agora você pode fazer as somas sem problemas
+# Calcular os totais e o crescimento
 total_2023 = dados_2023['TOTAL'].sum()
 total_2024 = dados_2024['TOTAL'].sum()
 crescimento = (total_2024 - total_2023) / total_2023 * 100
@@ -42,9 +44,9 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
         dbc.Row([
             dbc.Col([
                 html.H4("Faturamento Total"),
-                html.P(f"2023: R${dados_2023['TOTAL'].sum():,.2f}"),
-                html.P(f"2024: R${dados_2024['TOTAL'].sum():,.2f}"),
-                html.P(f"Crescimento: {(dados_2024['TOTAL'].sum() - dados_2023['TOTAL'].sum()) / dados_2023['TOTAL'].sum() * 100:.2f}%")
+                html.P(f"2023: R${total_2023:,.2f}"),
+                html.P(f"2024: R${total_2024:,.2f}"),
+                html.P(f"Crescimento: {crescimento:.2f}%")
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'}),
             dbc.Col([
                 html.H4("Quantidade de Garrafas"),
@@ -54,9 +56,9 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'}),
             dbc.Col([
                 html.H4("Quantidade de Clientes"),
-                html.P(f"2023: {dados_2023['COD CLIENTE'].nunique():.0f}"),
-                html.P(f"2024: {dados_2024['COD CLIENTE'].nunique():.0f}"),
-                html.P(f"Crescimento: {(dados_2024['COD CLIENTE'].nunique() - dados_2023['COD CLIENTE'].nunique()) / dados_2023['COD CLIENTE'].nunique() * 100:.2f}%")
+                html.P(f"2023: {dados_2023['CODCLI'].nunique():.0f}"),
+                html.P(f"2024: {dados_2024['CODCLI'].nunique():.0f}"),
+                html.P(f"Crescimento: {(dados_2024['CODCLI'].nunique() - dados_2023['CODCLI'].nunique()) / dados_2023['CODCLI'].nunique() * 100:.2f}%")
             ], style={'textAlign': 'center', 'border': '1px solid #F6C62D', 'padding': '10px'})
         ])
     ], style={'margin-bottom': '30px'}),
@@ -69,7 +71,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("RCA", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-rca',
-                    options=[{'label': i, 'value': i} for i in data['RCA'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['CODUSUR'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -78,7 +80,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Cliente", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-cliente',
-                    options=[{'label': i, 'value': i} for i in data['COD CLIENTE'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['CODCLI'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -87,7 +89,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Data Início", style={'color': '#F6C62D'}),
                 dcc.DatePickerSingle(
                     id='filtro-data-inicio',
-                    date=data['DT FAT'].min(),
+                    date=data['DTFAT'].min(),
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
             ], width=3),
@@ -95,7 +97,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Data Fim", style={'color': '#F6C62D'}),
                 dcc.DatePickerSingle(
                     id='filtro-data-fim',
-                    date=data['DT FAT'].max(),
+                    date=data['DTFAT'].max(),
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
             ], width=3),
@@ -105,7 +107,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Seguimento", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-seguimento',
-                    options=[{'label': i, 'value': i} for i in data['SEGUIMENTO'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['RAMO'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -114,7 +116,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Departamento", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-departamento',
-                    options=[{'label': i, 'value': i} for i in data['DEPARTAMENTO'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['CODEPTO'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -123,7 +125,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Produto", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-produto',
-                    options=[{'label': i, 'value': i} for i in data['COD PROD'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['CODPROD'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -132,7 +134,7 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
                 html.Label("Supervisor", style={'color': '#F6C62D'}),
                 dcc.Dropdown(
                     id='filtro-supervisor',
-                    options=[{'label': i, 'value': i} for i in data['NOME SUPERVISOR'].unique()],
+                    options=[{'label': i, 'value': i} for i in data['SUPERVISOR'].unique()],
                     value='Todos',
                     style={'color': '#000000', 'backgroundColor': '#F6C62D'}
                 )
@@ -140,26 +142,21 @@ layout = html.Div(style={'backgroundColor': '#111111', 'color': '#FFFFFF'}, chil
         ])
     ], style={'margin-bottom': '30px'}),
 
-    # Seção de Resultados e Gráficos
+    # Seção de Tabela e Gráficos
     dbc.Container([
         html.H2("Resultados", style={'color': '#F6C62D'}),
-        dbc.Row([
-            dbc.Col(
-                dcc.Dropdown(
-                    id='tipo-visualizacao',
-                    options=[
-                        {'label': 'Gráfico', 'value': 'grafico'},
-                        {'label': 'Tabela', 'value': 'tabela'}
-                    ],
-                    value='grafico',
-                    style={'color': '#000000', 'backgroundColor': '#F6C62D'}
-                ), width=2
-            ),
-            dbc.Col(dcc.Graph(id='grafico1'), width=6, style={'border': '1px solid #F6C62D', 'padding': '10px'}),
-            dbc.Col(dcc.Graph(id='grafico2'), width=6, style={'border': '1px solid #F6C62D', 'padding': '10px'})
-        ]),
-        dbc.Row([
-            dbc.Col(dash_table.DataTable(id='tabela', style_table={'display': 'none'}), width=12)
-        ])
-    ], style={'margin-bottom': '30px'})
+        dash_table.DataTable(
+            id='tabela',
+            columns=[{"name": col, "id": col} for col in data.columns],
+            style_table={'overflowX': 'auto'},
+            style_cell={
+                'textAlign': 'left',
+                'padding': '5px',
+                'backgroundColor': '#1E1E1E',
+                'color': 'white'
+            }
+        ),
+        dcc.Graph(id='grafico1', config={'displayModeBar': False}),
+        dcc.Graph(id='grafico2', config={'displayModeBar': False})
+    ], style={'margin-top': '30px'})
 ])
